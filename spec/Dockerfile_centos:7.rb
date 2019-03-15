@@ -43,7 +43,6 @@ describe "Dockerfile" do
   # packages
   describe package('nodejs') do
     it { should be_installed }
-    its('version') { should eq "11.11.0-1nodesource" }
   end
   
   # verify the package is installed
