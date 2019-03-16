@@ -46,7 +46,7 @@ describe "Dockerfile" do
   end
   
   # verify the package is installed
-  describe command('npm list --depth=0') do
+  describe command('npm list -g') do
     its(:exit_status) { should eq 0 }
     its(:stdout) { should contain 'cloudsploit' }
   end
