@@ -1,18 +1,18 @@
 {
   "variables": {
-    "ansible_host": "{{env `PACKAGE`}}",
+    "ansible_host": "{{env `PACKAGE`}}-{{env `IMAGE_NAME`}}",
     "ansible_connection": "docker",
-    "image": "{{env `DOCKER_BASE_IMAGE`}}",
+    "base_image": "{{env `BASE_IMAGE`}}",
+    "build_date": "{{isotime \"20060102\"}}",
+    "image_name": "{{env `IMAGE_NAME`}}",
     "package": "{{env `PACKAGE`}}",
     "package_version": "{{env `PACKAGE_VERSION`}}",
-    "username": "{{env `DOCKER_USERNAME`}}",
-    "version": "{{isotime \"20060102.030405\"}}",
-    "version_simple": "{{isotime \"20060102\"}}"
+    "username": "{{env `DOCKER_USERNAME`}}"
   },
   "builders": [
     {
       "type": "docker",
-      "image": "{{user `image`}}",
+      "image": "{{user `base_image`}}",
       "commit": "true",
       "exec_user": "root",
       "run_command": [
@@ -26,8 +26,6 @@
       ],
       "changes": [
         "USER root",
-        "VOLUME /root/scans",
-        "WORKDIR /root/scans",
         "ENTRYPOINT [\"/bin/bash\", \"-l\", \"-c\"]",
         "CMD [\"bash\"]"
       ]
@@ -36,32 +34,8 @@
   "provisioners": [
     {
       "type": "shell",
-      "inline": [
-        "whoami",
-        "yum update -y",
-        "yum install -y which nano wget git"
-      ]
-    },
-    {
-      "type": "shell-local",
-  	  "command": "ansible-galaxy install --force -v --roles-path='./ansible/roles' --role-file='./ansible/requirements.yml'"
-    },
-    {
-      "type": "ansible",
-      "user": "root",
-      "playbook_file": "./ansible/playbook.yml",
-      "extra_arguments": [
-        "--extra-vars",
-        "ansible_host={{user `ansible_host`}} ansible_connection={{user `ansible_connection`}}"
-      ]
-    },
-    {
-      "type": "shell",
-      "inline": [
-        "cd ~",
-        "git clone https://github.com/cloudsploit/scans",
-        "cd scans",
-        "npm install"
+      "scripts": [
+        "./scripts/install_cloudsploit.sh"
       ]
     }
   ],
@@ -70,16 +44,12 @@
       {
         "type": "docker-tag",
         "repository": "{{ user `username` }}/{{user `package`}}",
-        "tag": "{{user `version_simple`}}"
+        "tag": "{{user `package_version`}}-{{user `image_name`}}-{{user `build_date`}}"
       },
       {
         "type": "docker-tag",
         "repository": "{{ user `username` }}/{{user `package`}}",
-        "tag": "{{user `package_version`}}"
-      },
-      {
-        "type": "docker-tag",
-        "repository": "{{ user `username` }}/{{user `package`}}"
+        "tag": "{{user `package_version`}}-{{user `image_name`}}"
       }
     ]
   ]

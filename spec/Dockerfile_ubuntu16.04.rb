@@ -8,20 +8,20 @@ Docker.validate_version!
 describe "Dockerfile" do
   before(:all) do
     image = Docker::Image.get(
-      ENV['DOCKER_USERNAME'] + "/" + ENV['PACKAGE'] + ":" + ENV['PACKAGE_VERSION']
+      ENV['DOCKER_USERNAME'] + "/" + ENV['PACKAGE'] + ":" + ENV['PACKAGE_VERSION'] + "-" + ENV['IMAGE_NAME']
     )
 
     # https://github.com/mizzy/specinfra
     # https://docs.docker.com/engine/api/v1.24/#31-containers
     # https://github.com/swipely/docker-api
     # https://serverspec.org/resource_types.html
-    set :os, family: :redhat
+    set :os, family: :debian
     set :backend, :docker
     set :docker_image, image.id
   end
 
   def os_version
-    command("cat /etc/system-release").stdout
+    command("cat /etc/os-release").stdout
   end
 
   def sys_user
@@ -30,9 +30,9 @@ describe "Dockerfile" do
 
 
 
-  it "installs the right version of Centos" do
-    expect(os_version).to include("Amazon Linux AMI")
-    expect(os_version).to include("2018.03")
+  it "uses the right version of Ubuntu" do
+    expect(os_version).to include("Ubuntu")
+    expect(os_version).to include("16.04")
   end
 
   it "runs as root user" do
@@ -46,7 +46,7 @@ describe "Dockerfile" do
   end
   
   # verify the package is installed
-  describe command('npm list --depth=0') do
+  describe command('npm list -g') do
     its(:exit_status) { should eq 0 }
     its(:stdout) { should contain 'cloudsploit' }
   end

@@ -8,7 +8,7 @@ Docker.validate_version!
 describe "Dockerfile" do
   before(:all) do
     image = Docker::Image.get(
-      ENV['DOCKER_USERNAME'] + "/" + ENV['PACKAGE'] + ":" + ENV['PACKAGE_VERSION']
+      ENV['DOCKER_USERNAME'] + "/" + ENV['PACKAGE'] + ":" + ENV['PACKAGE_VERSION'] + "-" + ENV['IMAGE_NAME']
     )
 
     # https://github.com/mizzy/specinfra
@@ -30,7 +30,7 @@ describe "Dockerfile" do
 
 
 
-  it "installs the right version of Centos" do
+  it "uses the right version of Centos" do
     expect(os_version).to include("CentOS")
     expect(os_version).to include("7.6.1810")
   end

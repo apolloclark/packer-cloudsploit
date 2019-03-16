@@ -1,6 +1,0 @@
-# http://docs.ansible.com/ansible/latest/playbooks_variables.html#variable-file-separation
----
-hostname: all
-
-# geerlingguy.nodejs
-nodejs_version: "11.x"
