@@ -8,4 +8,7 @@
  */
 
 rootProject.name = 'packer-cloudsploit'
-include ':gradle-build:centos7.6', ':gradle-build:ubuntu18.04', ':gradle-build:ubuntu16.04'
+include ':gradle-build:rhel7.6',
+    ':gradle-build:centos7.6',
+    ':gradle-build:ubuntu18.04',
+    ':gradle-build:ubuntu16.04'

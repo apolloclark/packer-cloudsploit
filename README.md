@@ -15,6 +15,7 @@ Packer, Ansible, Serverspec, build to create a Docker image running Cloudsploit.
 ```shell
 git clone https://github.com/apolloclark/packer-cloudsploit
 cd ./packer-cloudsploit
+
 # update submodules
 git submodule update --recursive --remote
 
@@ -39,7 +40,9 @@ gradle test --rerun-tasks --parallel --project-dir gradle-build
 # Gradle, build only specific OS images
 gradle ubuntu18.04:test --project-dir gradle-build --rerun-tasks
 gradle ubuntu16.04:test --project-dir gradle-build --rerun-tasks
-gradle centos7:test     --project-dir gradle-build --rerun-tasks
+gradle centos7.6:test   --project-dir gradle-build --rerun-tasks
+gradle rhel7.6:test     --project-dir gradle-build --rerun-tasks
+gradle rhel8.0:test   --project-dir gradle-build --rerun-tasks
 
 # Gradle, publish images
 gradle push --parallel --project-dir gradle-build
