@@ -1,54 +1,27 @@
 # spec/Dockerfile_spec.rb
 
-require "serverspec"
-require "docker"
-
-Docker.validate_version!
+require_relative "spec_helper"
 
 describe "Dockerfile" do
   before(:all) do
-    image = Docker::Image.get(
-      ENV['DOCKER_USERNAME'] + "/" + \
-      ENV['PACKAGE_NAME'] + ":" + \
-      ENV['PACKAGE_VERSION'] + "-" + \
-      ENV['IMAGE_NAME']
-    )
-
-    # https://github.com/mizzy/specinfra
-    # https://docs.docker.com/engine/api/v1.24/#31-containers
-    # https://github.com/swipely/docker-api
-    # https://serverspec.org/resource_types.html
+    load_docker_image()
     set :os, family: :debian
-    set :backend, :docker
-    set :docker_image, image.id
   end
 
-  def os_version
-    command("cat /etc/os-release").stdout
+  describe "Dockerfile#running" do
+    it "runs the right version of Ubuntu" do
+      expect(os_version).to include("Ubuntu")
+      expect(os_version).to include("16.04")
+    end
+    it "runs as root" do
+      expect(sys_user).to eql("root")
+    end
   end
 
-  def sys_user
-    command("whoami").stdout.strip
-  end
-
-
-
-  it "uses the right version of Ubuntu" do
-    expect(os_version).to include("Ubuntu")
-    expect(os_version).to include("16.04")
-  end
-
-  it "runs as root user" do
-    expect(sys_user).to eql("root")
-  end
-
-
-  # packages
   describe package('nodejs') do
     it { should be_installed }
   end
   
-  # verify the package is installed
   describe command('npm list -g') do
     its(:exit_status) { should eq 0 }
     its(:stdout) { should contain 'cloudsploit' }
